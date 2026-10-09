@@ -1,12 +1,12 @@
 /* ==========================================================================
-   VNG PROJECTS — Site behaviour
+   VNG PROJECTS � Site behaviour
    Vanilla JS, no dependencies.
-   Sections: 1 Config · 2 Helpers · 3 Header · 4 Reveal · 5 Counters
-             6 Media slots · 7 Price calculator · 8 Accordion · 9 Forms
+   Sections: 1 Config � 2 Helpers � 3 Header � 4 Reveal � 5 Counters
+             6 Media slots � 7 Price calculator � 8 Accordion � 9 Forms
    ========================================================================== */
 
 /* 1. CONFIG =============================================================
-   ⚠️  REPLACE THESE BEFORE GOING LIVE — they are used site-wide.
+   ??  REPLACE THESE BEFORE GOING LIVE � they are used site-wide.
    WhatsApp number in international format, digits only, no "+" or spaces.
    ====================================================================== */
 const CONFIG = {
@@ -20,7 +20,7 @@ const CONFIG = {
 
 if (!CONFIG.whatsapp || !CONFIG.phone) {
   console.error(
-    "[Kanii] CONFIG.whatsapp or CONFIG.phone is not set — contact links will be wrong."
+    "[Kanii] CONFIG.whatsapp or CONFIG.phone is not set � contact links will be wrong."
   );
 }
 
@@ -36,7 +36,7 @@ document.documentElement.classList.remove("no-js");
 
 /* Indian numbering format: 1,60,00,000 */
 function formatINR(value) {
-  return "₹" + Math.round(value).toLocaleString("en-IN");
+  return "?" + Math.round(value).toLocaleString("en-IN");
 }
 
 function waLink(message) {
@@ -236,7 +236,7 @@ function initCalculator() {
     const size = parseFloat(form.elements.plotSize.value);
     const facing = parseFloat(form.elements.facing?.value || "0");
     if (!size) {
-      out.textContent = "—";
+      out.textContent = "�";
       if (note) note.textContent = "Select a plot size to see the indicative price.";
       return;
     }
@@ -245,13 +245,13 @@ function initCalculator() {
 
     if (facing) {
       total += size * facing;
-      extra = ` (incl. ${facing >= 0 ? "+" : "−"}₹${Math.abs(facing).toLocaleString(
+      extra = ` (incl. ${facing >= 0 ? "+" : "?"}?${Math.abs(facing).toLocaleString(
         "en-IN"
       )}/sq.yd ${facing >= 0 ? "corner" : "interior"} premium)`;
     }
     out.textContent = formatINR(total);
     if (note)
-      note.textContent = `${size} sq. yd × ₹${RATE.toLocaleString(
+      note.textContent = `${size} sq. yd � ?${RATE.toLocaleString(
         "en-IN"
       )}/sq.yd${extra}. Registration, GST, documentation and plot
       maintenance charges extra. Price indicative & negotiable.`;
@@ -287,7 +287,7 @@ function initAccordion() {
   });
 }
 
-/* 9. FORMS → WhatsApp ====================================================
+/* 9. FORMS ? WhatsApp ====================================================
    No backend needed: the enquiry is composed into a WhatsApp message.
    To use a real form service instead, swap this handler.
    ====================================================================== */
@@ -301,22 +301,22 @@ function initForms() {
 
       const plot = form.querySelector("[data-calc-out]");
       const lines = [
-        `New enquiry — ${form.dataset.enquiry}`,
+        `New enquiry � ${form.dataset.enquiry}`,
         "",
-        `Name: ${get("name") || "—"}`,
-        `Phone: ${get("phone") || "—"}`,
+        `Name: ${get("name") || "�"}`,
+        `Phone: ${get("phone") || "�"}`,
       ];
       if (get("email")) lines.push(`Email: ${get("email")}`);
       if (get("plotSize"))
         lines.push(`Plot size: ${get("plotSize")} sq. yd`);
       if (get("budget")) lines.push(`Budget: ${get("budget")}`);
-      if (plot && plot.textContent !== "—")
+      if (plot && plot.textContent !== "�")
         lines.push(`Indicative value: ${plot.textContent}`);
       if (get("message")) lines.push("", get("message"));
 
       window.open(waLink(lines.join("\n")), "_blank", "noopener");
       form.reset();
-      if (plot) plot.textContent = "—";
+      if (plot) plot.textContent = "�";
       form.dispatchEvent(new CustomEvent("enquiry:sent", { bubbles: true }));
     });
   });

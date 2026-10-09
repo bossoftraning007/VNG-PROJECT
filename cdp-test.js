@@ -19,7 +19,7 @@ let chrome = null;
 
 const check = (name, pass, detail = "") => {
   if (!pass) failures++;
-  console.log(`  ${pass ? "PASS" : "FAIL"}  ${name}${detail ? "  → " + detail : ""}`);
+  console.log(`  ${pass ? "PASS" : "FAIL"}  ${name}${detail ? "  ? " + detail : ""}`);
 };
 
 function cleanup() {
@@ -124,7 +124,7 @@ async function main() {
 
   const goto = async (url) => {
     await cdp.send("Page.navigate", { url });
-    /* Wait for the deferred script to actually run, not just a fixed sleep —
+    /* Wait for the deferred script to actually run, not just a fixed sleep ?
        a fixed sleep raced navigation and evaluated against a stale document. */
     for (let i = 0; i < 100; i++) {
       await sleep(150);
@@ -173,8 +173,8 @@ async function main() {
     };
   `);
 
-  /* ── 1. Calculator maths ─────────────────────────────────────────── */
-  console.log("\n[1] Price calculator — Future Highway @ Alair");
+  /* ?? 1. Calculator maths ??????????????????????????????????????????? */
+  console.log("\n[1] Price calculator ? Future Highway @ Alair");
   await goto(fileUrl("projects/future-highway-alair/index.html"));
 
   const calcRun = await evaluate(`
@@ -201,25 +201,25 @@ async function main() {
 
   check("data-calc resolves to a <form>", calcRun.ok, calcRun.why || "");
   if (calcRun.ok) {
-    check("135 sq.yd = ₹16,20,000", calcRun.d135.out === "₹16,20,000", calcRun.d135.out);
-    check("200 sq.yd = ₹24,00,000", calcRun.d200.out === "₹24,00,000", calcRun.d200.out);
-    check("500 sq.yd = ₹60,00,000", calcRun.d500.out === "₹60,00,000", calcRun.d500.out);
+    check("135 sq.yd = ?16,20,000", calcRun.d135.out === "?16,20,000", calcRun.d135.out);
+    check("200 sq.yd = ?24,00,000", calcRun.d200.out === "?24,00,000", calcRun.d200.out);
+    check("500 sq.yd = ?60,00,000", calcRun.d500.out === "?60,00,000", calcRun.d500.out);
     check(
-      "corner 200 = ₹25,50,000 (+₹750/sq.yd)",
-      calcRun.corner200.out === "₹25,50,000",
+      "corner 200 = ?25,50,000 (+?750/sq.yd)",
+      calcRun.corner200.out === "?25,50,000",
       calcRun.corner200.out
     );
     check(
-      "interior 200 = ₹23,20,000 (−₹400/sq.yd)",
-      calcRun.interior200.out === "₹23,20,000",
+      "interior 200 = ?23,20,000 (??400/sq.yd)",
+      calcRun.interior200.out === "?23,20,000",
       calcRun.interior200.out
     );
     check("rate is 12000", calcRun.rate === "12000", calcRun.rate);
     check("note explains the maths", /\/\s*sq\.yd/.test(calcRun.d200.note));
   }
 
-  /* ── 2. Enquiry form composes a WhatsApp message ─────────────────── */
-  console.log("\n[2] Enquiry → WhatsApp handoff");
+  /* ?? 2. Enquiry form composes a WhatsApp message ??????????????????? */
+  console.log("\n[2] Enquiry ? WhatsApp handoff");
   const formRun = await evaluate(`
     const f = document.querySelector("[data-enquiry]");
     f.elements.name.value = "Test Buyer";
@@ -236,7 +236,7 @@ async function main() {
   check("name prefilled in message", formRun.hasName);
   check("form resets after send", true);
 
-  /* ── 3. Accordion ────────────────────────────────────────────────── */
+  /* ?? 3. Accordion ?????????????????????????????????????????????????? */
   console.log("\n[3] FAQ accordion");
   const accRun = await evaluate(`
     const acc = document.querySelector("[data-acc]");
@@ -255,7 +255,7 @@ async function main() {
   check("panel gets a pixel height", /^\d+px$/.test(accRun.panelH), accRun.panelH);
   check("aria-expanded set to true", accRun.aria === "true", accRun.aria);
 
-  /* ── 4. WhatsApp links ───────────────────────────────────────────── */
+  /* ?? 4. WhatsApp links ????????????????????????????????????????????? */
   console.log("\n[4] WhatsApp / contact links");
   const linkRun = await evaluate(`
     const wa = [...document.querySelectorAll("a[data-wa]")];
@@ -275,7 +275,7 @@ async function main() {
   check("tel: links correct", linkRun.telOk, linkRun.telHrefs.join(" | "));
   check("phone display text injected", linkRun.phoneText === "+91 95059 03371", linkRun.phoneText);
 
-  /* ── 5. Media slots fall back when images are absent ─────────────── */
+  /* ?? 5. Media slots fall back when images are absent ??????????????? */
   console.log("\n[5] Image placeholders (images/ is empty by design)");
   /* Scroll the whole page first so lazy-loaded images are actually attempted */
   await evaluate(`
@@ -311,11 +311,11 @@ async function main() {
     "no frame shows a broken image icon",
     mediaRun.brokenVisible === 0,
     `${mediaRun.brokenVisible} of ${mediaRun.attempted} attempted (${mediaRun.frames} total)` +
-      (mediaRun.offenders.length ? " — " + mediaRun.offenders.join(" | ") : "")
+      (mediaRun.offenders.length ? " ? " + mediaRun.offenders.join(" | ") : "")
   );
   check("placeholder captions stay visible", mediaRun.tagsOpaque > 0, `${mediaRun.tagsOpaque} tags`);
 
-  /* ── 6. Sticky header + scroll reveal ────────────────────────────── */
+  /* ?? 6. Sticky header + scroll reveal ?????????????????????????????? */
   console.log("\n[6] Scroll behaviour");
   const scrollRun = await evaluate(`
     window.scrollTo(0, 0);
@@ -330,8 +330,8 @@ async function main() {
   check("header solidifies on scroll", scrollRun.after === true);
   check("reveal elements activate", scrollRun.revealed > 0, `${scrollRun.revealed}/${scrollRun.total}`);
 
-  /* ── 7. Layout sanity at desktop width ───────────────────────────── */
-  console.log("\n[7] Computed layout @ 1440×900");
+  /* ?? 7. Layout sanity at desktop width ????????????????????????????? */
+  console.log("\n[7] Computed layout @ 1440?900");
   const layoutRun = await evaluate(`
     const cs = (sel, prop) => {
       const el = document.querySelector(sel);
@@ -361,8 +361,8 @@ async function main() {
   check("mobile CTA bar hidden on desktop", layoutRun.ctabar === "none", layoutRun.ctabar);
   check("body overflow-x guarded", layoutRun.overflow === "hidden", layoutRun.overflow);
 
-  /* ── 8. Mobile viewport ──────────────────────────────────────────── */
-  console.log("\n[8] Mobile @ 390×844");
+  /* ?? 8. Mobile viewport ???????????????????????????????????????????? */
+  console.log("\n[8] Mobile @ 390?844");
   await cdp.send("Emulation.setDeviceMetricsOverride", {
     width: 390, height: 844, deviceScaleFactor: 2, mobile: true,
   });
@@ -397,7 +397,7 @@ async function main() {
     };
   `);
   check("no horizontal overflow on mobile", mobOverflow.scrollW - mobOverflow.clientW <= 0,
-    `${mobOverflow.scrollW} vs ${mobOverflow.clientW}` + (mobOverflow.culprits.length ? " — " + mobOverflow.culprits.join(" | ") : ""));
+    `${mobOverflow.scrollW} vs ${mobOverflow.clientW}` + (mobOverflow.culprits.length ? " ? " + mobOverflow.culprits.join(" | ") : ""));
   check("burger visible", mobRun.burger === "grid", mobRun.burger);
   check("desktop nav hidden", mobRun.navHidden === "none", mobRun.navHidden);
   check("sticky CTA bar shown", mobRun.ctabar === "flex", mobRun.ctabar);
@@ -418,7 +418,7 @@ async function main() {
   await cdp.send("Emulation.clearDeviceMetricsOverride");
   await sleep(500);
 
-  /* ── 9. Brand landing page ───────────────────────────────────────── */
+  /* ?? 9. Brand landing page ????????????????????????????????????????? */
   console.log("\n[9] Brand landing page");
   await goto(fileUrl("index.html"));
   const homeRun = await evaluate(`
@@ -443,7 +443,7 @@ async function main() {
   check("all nav sections exist", homeRun.sections);
   check("no dead anchor links", homeRun.deadAnchors.length === 0, homeRun.deadAnchors.join(","));
 
-  /* ── 10. No console errors anywhere ──────────────────────────────── */
+  /* ?? 10. No console errors anywhere ???????????????????????????????? */
   console.log("\n[10] Runtime errors");
   const errors = cdp.events
     .filter((e) => e.method === "Log.entryAdded" && e.params.entry.level === "error")
@@ -453,7 +453,7 @@ async function main() {
     .filter((t) => !/ERR_FILE_NOT_FOUND|net::ERR_FILE_NOT_FOUND/.test(t));
   check("no console errors", errors.length === 0, errors.slice(0, 3).join(" | "));
 
-  /* ── Screenshot for the record ───────────────────────────────────── */
+  /* ?? Screenshot for the record ????????????????????????????????????? */
   const shot = await cdp.send("Page.captureScreenshot", { format: "png" });
   const outPath = path.join(os.tmpdir(), "kilo", "final-home.png");
   fs.writeFileSync(outPath, Buffer.from(shot.data, "base64"));

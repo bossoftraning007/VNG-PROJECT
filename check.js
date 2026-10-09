@@ -35,7 +35,7 @@ for (const page of pages) {
       const idm = /\sid="([^"]+)"/.exec(attrs);
       if (idm) {
         if (ids.has(idm[1])) {
-          console.log(`  ✗ duplicate id "${idm[1]}" in ${page}`);
+          console.log(`  ? duplicate id "${idm[1]}" in ${page}`);
           problems++;
         }
         ids.set(idm[1], true);
@@ -44,14 +44,14 @@ for (const page of pages) {
     } else {
       const open = stack.pop();
       if (open !== tag) {
-        console.log(`  ✗ closing </${tag}> but <${open}> was open — ${page}`);
+        console.log(`  ? closing </${tag}> but <${open}> was open ? ${page}`);
         problems++;
       }
     }
   }
 
   if (stack.length) {
-    console.log(`  ✗ ${stack.length} unclosed tag(s) in ${page}: ${stack.join(", ")}`);
+    console.log(`  ? ${stack.length} unclosed tag(s) in ${page}: ${stack.join(", ")}`);
     problems++;
   }
 
@@ -59,7 +59,7 @@ for (const page of pages) {
   const hrefRe = /href="#([^"]+)"/g;
   while ((m = hrefRe.exec(html))) {
     if (!ids.has(m[1])) {
-      console.log(`  ✗ dead anchor #${m[1]} in ${page}`);
+      console.log(`  ? dead anchor #${m[1]} in ${page}`);
       problems++;
     }
   }
@@ -69,14 +69,14 @@ for (const page of pages) {
   const syms = new Set([...html.matchAll(/<symbol id="([^"]+)"/g)].map((s) => s[1]));
   for (const u of uses) {
     if (!syms.has(u)) {
-      console.log(`  ✗ icon #${u} used but not defined in ${page}`);
+      console.log(`  ? icon #${u} used but not defined in ${page}`);
       problems++;
     }
   }
 
   const revealed = (html.match(/class="[^"]*\breveal\b/g) || []).length;
   console.log(
-    `✓ ${page} — ${stack.length ? "" : ""}${Object.values(counts).filter((v) => v === 0).length} balanced tags, ` +
+    `? ${page} ? ${stack.length ? "" : ""}${Object.values(counts).filter((v) => v === 0).length} balanced tags, ` +
     `${ids.size} ids, ${uses.size} icons, ${revealed} reveal elements`
   );
 }
@@ -93,7 +93,7 @@ for (const page of pages) {
   );
   for (const u of used) {
     if (!defined.has(u)) {
-      console.log(`  ✗ undefined CSS var ${u} used in ${page}`);
+      console.log(`  ? undefined CSS var ${u} used in ${page}`);
       problems++;
     }
   }
@@ -102,9 +102,9 @@ for (const page of pages) {
 /* JS syntax check */
 try {
   new Function(fs.readFileSync("assets/js/main.js", "utf8"));
-  console.log("✓ assets/js/main.js parses");
+  console.log("? assets/js/main.js parses");
 } catch (e) {
-  console.log("  ✗ assets/js/main.js syntax error: " + e.message);
+  console.log("  ? assets/js/main.js syntax error: " + e.message);
   problems++;
 }
 
