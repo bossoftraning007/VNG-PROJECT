@@ -232,7 +232,7 @@ async function main() {
     window.open = realOpen;
     return { opened, hasName: opened ? decodeURIComponent(opened).includes("Test Buyer") : false };
   `);
-  check("submit opens wa.me link", /wa\.me\/919000000000/.test(formRun.opened || ""));
+  check("submit opens wa.me link", /wa\.me\/919505903371/.test(formRun.opened || ""));
   check("name prefilled in message", formRun.hasName);
   check("form resets after send", true);
 
@@ -262,18 +262,18 @@ async function main() {
     const tel = [...document.querySelectorAll("a[data-phone-link]")];
     return {
       waCount: wa.length,
-      allResolved: wa.every(a => a.href.startsWith("https://wa.me/919000000000?text=")),
+      allResolved: wa.every(a => a.href.startsWith("https://wa.me/919505903371?text=")),
       allBlankRel: wa.every(a => a.rel.includes("noopener")),
       allBlankTarget: wa.every(a => a.target === "_blank"),
       telHrefs: [...new Set(tel.map(a => a.getAttribute("href")))],
-      telOk: tel.every(a => a.getAttribute("href") === "tel:+919000000000"),
+      telOk: tel.every(a => a.getAttribute("href") === "tel:+919505903371"),
       phoneText: document.querySelector("[data-phone]").textContent.trim()
     };
   `);
   check("all data-wa links resolved", linkRun.allResolved, `${linkRun.waCount} links`);
   check("all open in new tab safely", linkRun.allBlankRel && linkRun.allBlankTarget);
   check("tel: links correct", linkRun.telOk, linkRun.telHrefs.join(" | "));
-  check("phone display text injected", linkRun.phoneText === "+91 90000 00000", linkRun.phoneText);
+  check("phone display text injected", linkRun.phoneText === "+91 95059 03371", linkRun.phoneText);
 
   /* ── 5. Media slots fall back when images are absent ─────────────── */
   console.log("\n[5] Image placeholders (images/ is empty by design)");
@@ -438,7 +438,7 @@ async function main() {
   `);
   check("no horizontal overflow", homeRun.hScroll <= 0, `overflow: ${homeRun.hScroll}px`);
   check("WhatsApp links resolved", homeRun.waResolved);
-  check("two project cards", homeRun.projectCards === 2, `${homeRun.projectCards}`);
+  check("one project card", homeRun.projectCards === 1, `${homeRun.projectCards}`);
   check("links to project 1 microsite", homeRun.p1link);
   check("all nav sections exist", homeRun.sections);
   check("no dead anchor links", homeRun.deadAnchors.length === 0, homeRun.deadAnchors.join(","));

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   KANII BY VNG PROJECTS — Site behaviour
+   VNG PROJECTS — Site behaviour
    Vanilla JS, no dependencies.
    Sections: 1 Config · 2 Helpers · 3 Header · 4 Reveal · 5 Counters
              6 Media slots · 7 Price calculator · 8 Accordion · 9 Forms
@@ -10,10 +10,12 @@
    WhatsApp number in international format, digits only, no "+" or spaces.
    ====================================================================== */
 const CONFIG = {
-  whatsapp: "919000000000",
-  phone: "+919000000000",
-  phoneDisplay: "+91 90000 00000",
-  email: "sales@vniprojects.in",
+  whatsapp: "919505903371",
+  phone: "+919505903371",
+  phoneDisplay: "+91 95059 03371",
+  secondaryPhone: "+919849754071",
+  secondaryPhoneDisplay: "+91 98497 54071",
+  email: "rasamallaganesh71@gmail.com",
 };
 
 if (!CONFIG.whatsapp || !CONFIG.phone) {
