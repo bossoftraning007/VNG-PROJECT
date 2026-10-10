@@ -1,0 +1,52 @@
+﻿/* Admin CSS - VNG Projects */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: #f5f5f5; color: #333; }
+.admin-nav { background: #0C1411; padding: 1rem; }
+.admin-nav a { color: #C9A961; text-decoration: none; margin-right: 1rem; font-weight: 600; }
+.admin-content { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.stat-card { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.stat-card h3 { font-size: 0.85rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+.stat-card .stat-num { font-size: 2.5rem; font-weight: 700; color: #C9A961; }
+.section-title { font-size: 1.5rem; margin-bottom: 1rem; color: #0C1411; }
+.plot-grid { display: grid; grid-template-columns: repeat(20, 1fr); gap: 4px; margin-bottom: 2rem; }
+.plot-cell { aspect-ratio: 1; border: 1px solid #ddd; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: white; font-weight: 600; }
+.plot-cell.available { background: #4CAF50; }
+.plot-cell.booked { background: #FF9800; }
+.plot-cell.sold { background: #F44336; }
+.plot-cell.advance { background: #2196F3; }
+.plot-legend { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; }
+.legend-swatch { width: 16px; height: 16px; border-radius: 3px; }
+.lead-list { background: white; border-radius: 8px; overflow: hidden; }
+.lead-item { padding: 1rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+.lead-item:last-child { border-bottom: none; }
+.lead-info h4 { color: #0C1411; margin-bottom: 0.25rem; }
+.lead-info p { font-size: 0.9rem; color: #666; }
+.lead-actions { display: flex; gap: 0.5rem; }
+.btn { background: #C9A961; color: #0C1411; border: none; padding: 0.6rem 1.2rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+.btn:hover { background: #B89452; }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-danger { background: #dc3545; color: white; }
+.btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; }
+.tab-nav { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid #e0e0e0; }
+.tab-btn { padding: 0.75rem 1.5rem; background: transparent; border: none; cursor: pointer; font-weight: 600; color: #666; }
+.tab-btn.active { color: #C9A961; border-bottom: 2px solid #C9A961; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0C1411; }
+.login-card { background: white; padding: 2rem; border-radius: 8px; width: 100%; max-width: 400px; text-align: center; }
+.login-card h2 { color: #0C1411; margin-bottom: 1.5rem; }
+.login-card input { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 1rem; }
+.upload-zone { border: 2px dashed #ddd; border-radius: 8px; padding: 2rem; text-align: center; cursor: pointer; transition: border-color 0.3s; }
+.upload-zone:hover { border-color: #C9A961; }
+.upload-zone.dragover { border-color: #C9A961; background: #faf8f5; }
+.thumbnail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.thumbnail-item { position: relative; }
+.thumbnail-item img { width: 100%; border-radius: 4px; }
+.thumbnail-item .remove { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.7); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; cursor: pointer; }
+.settings-form { background: white; padding: 1.5rem; border-radius: 8px; max-width: 600px; }
+.empty-state { text-align: center; padding: 3rem; color: #999; }

@@ -314,10 +314,23 @@ function initForms() {
         lines.push(`Indicative value: ${plot.textContent}`);
       if (get("message")) lines.push("", get("message"));
 
-      window.open(waLink(lines.join("\n")), "_blank", "noopener");
+window.open(waLink(lines.join("\n")), "_blank", "noopener");
       form.reset();
-      if (plot) plot.textContent = "�";
+      if (plot) plot.textContent = "₹";
       form.dispatchEvent(new CustomEvent("enquiry:sent", { bubbles: true }));
+
+      /* Also save lead to admin panel */
+      if (typeof window.addLead === "function") {
+        window.addLead({
+          name: get("name") || "Unknown",
+          phone: get("phone") || "",
+          plotSize: get("plotSize") || "",
+          email: get("email") || "",
+          budget: get("budget") || "",
+          message: get("message") || "",
+          source: form.dataset.enquiry || "Website enquiry"
+        });
+      }
     });
   });
 
