@@ -69,13 +69,16 @@
     </a>
 
     <nav class="nav" aria-label="Primary">
-      <a class="nav__link" href="#overview">Overview</a>
-      <a class="nav__link" href="#highlights">Highlights</a>
-      <a class="nav__link" href="#plantation">Plantation</a>
-      <a class="nav__link" href="#location">Location</a>
-      <a class="nav__link" href="#layouts">Layouts</a>
-      <a class="nav__link" href="#plots">Plots</a>
-      <a class="nav__link" href="#investment">Investment</a>
+<a class="nav__link" href="#overview">Overview</a>
+<a class="nav__link" href="#highlights">Highlights</a>
+<a class="nav__link" href="#plantation">Plantation</a>
+<a class="nav__link" href="#location">Location</a>
+<a class="nav__link" href="#layouts">Layouts</a>
+<a class="nav__link" href="#plots">Plots</a>
+<a class="nav__link" href="#investment">Investment</a>
+<a class="nav__link" href="#gallery">Gallery</a>
+<a class="nav__link" href="#posters">Posters</a>
+<a class="nav__link" href="#business">Business</a>
     </nav>
 
     <div class="header__cta">
@@ -792,33 +795,69 @@
     <div class="sec-head sec-head--center reveal">
       <span class="eyebrow eyebrow--center">Gallery</span>
       <h2>See the site before you visit.</h2>
+      <p class="lead mt-sm">Every picture here is uploaded from the admin panel — refresh this page to see new shots.</p>
     </div>
 
-<div class="gallery">
-      <figure class="media reveal">
-        <img src="../../images/project-1-alair.jpg" alt="Future Highway @ Alair entrance arch" loading="lazy">
-        <figcaption class="media__tag">Entrance arch</figcaption>
-      </figure>
-      <figure class="media reveal">
-        <img src="../../images/project-1-alair.jpg" alt="Srigandham sandalwood plantation" loading="lazy">
-        <figcaption class="media__tag">Sandalwood plantation</figcaption>
-      </figure>
-      <figure class="media reveal">
-        <img src="../../images/siteview.mp4" alt="Site view" loading="lazy">
-        <figcaption class="media__tag">Site view</figcaption>
-      </figure>
-      <figure class="media reveal">
-        <img src="../../images/layout-map.png" alt="Layout map" loading="lazy">
-        <figcaption class="media__tag">Layout map</figcaption>
-      </figure>
-      <figure class="media reveal">
-        <img src="../../images/roadview.mp4" alt="Road view" loading="lazy">
-        <figcaption class="media__tag">Road view</figcaption>
-      </figure>
-      <figure class="media reveal">
-        <img src="../../images/investment.jpg" alt="Investment case" loading="lazy">
-        <figcaption class="media__tag">Investment case</figcaption>
-      </figure>
+    <div class="gallery gallery--admin" data-gallery>
+      <div class="empty-state">No gallery images yet. Ask the admin to add some.</div>
+    </div>
+  </div>
+</section>
+
+<!-- POSTERS — admin-driven full-width marketing banners -->
+<section class="section section--dark" id="posters">
+  <div class="wrap">
+    <div class="sec-head sec-head--center reveal">
+      <span class="eyebrow eyebrow--center">Campaign Posters</span>
+      <h2>Latest from VNG Projects.</h2>
+      <p class="lead">Full-width banners uploaded from the admin panel — pricing updates, festival offers and new project launches appear here.</p>
+    </div>
+    <div class="posters" data-posters>
+      <div class="empty-state">No posters yet. Ask the admin to add one.</div>
+    </div>
+  </div>
+</section>
+
+<!-- BUSINESS / MAP -->
+<section class="section section--sand" id="business">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Business &amp; Location</span>
+      <h2>Where we are, and how to reach us.</h2>
+    </div>
+    <div class="business">
+      <div class="business__info reveal">
+        <div class="business__facts">
+          <div class="business__fact"><k>25+</k><span>Years promoter experience</span></div>
+          <div class="business__fact"><k>280</k><span>Plots at Future Highway @ Alair</span></div>
+          <div class="business__fact"><k>DTCP</k><span>T.L.P No. 85/2025/H</span></div>
+          <div class="business__fact"><k>RERA</k><span>TS RERA Registered</span></div>
+        </div>
+        <p class="lead mt-md">
+          VNG Projects Pvt. Ltd. · CIN U70109TG2021PTC156435 · Incorporated 28-Oct-2021, RoC Hyderabad.
+          Registered office: 4-9-870, Lecturers Colony, Hayath Nagar, Hyderabad, Rangareddy, Telangana 501505.
+        </p>
+        <div class="business__links">
+          <a data-wa="Hello VNG Projects, I'd like to book a site visit." href="#"><svg aria-hidden="true"><use href="#i-wa"></use></svg> WhatsApp</a>
+          <a data-phone-link href="tel:+919505903371"><svg aria-hidden="true"><use href="#i-phone"></use></svg> <span data-phone>+91 95059 03371</span></a>
+          <a data-phone-link href="tel:+919849754071"><svg aria-hidden="true"><use href="#i-phone"></use></svg> <span data-phone>+91 98497 54071</span></a>
+          <a href="mailto:rasamallaganesh71@gmail.com" data-email-link><svg aria-hidden="true"><use href="#i-mail"></use></svg> <span data-email>rasamallaganesh71@gmail.com</span></a>
+        </div>
+      </div>
+      <div class="map--wrap reveal">
+        <div class="mapframe">
+          <iframe
+            title="Map showing Future Highway @ Alair, Sharajipet, Alair Mandal, Yadadri-Bhongir District"
+            src="https://www.google.com/maps?q=17%C2%B036'58.6%22N+79%C2%B007'53.8%22E&z=15&output=embed"
+            loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <span class="mapframe__pin" aria-hidden="true"><svg><use href="#i-pin"></use></svg></span>
+        </div>
+        <div class="map--list">
+          <a href="https://www.google.com/maps/dir/?api=1&destination=Alair+Mandal,+Yadadri+Bhongir,+Telangana" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-pin"></use></svg> Get directions to site</a>
+          <a href="https://www.google.com/maps/dir/?api=1&destination=4-9-870,+Lecturers+Colony,+Hayath+Nagar,+Hyderabad,+Rangareddy,+Telangana+501505" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-pin"></use></svg> Registered office</a>
+          <a data-wa="Hello VNG Projects, I'd like directions and a site visit date." href="#"><svg aria-hidden="true"><use href="#i-cal"></use></svg> Plan a site visit</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1066,7 +1105,6 @@
   </div>
 </section>
 </main>
-
 <!-- FOOTER -->
 <footer class="footer">
   <div class="wrap">
@@ -1161,6 +1199,8 @@
 
 <script src="../../assets/js/main.js" defer></script>
 <script src="../../admin/js/lead-saver.js"></script>
+<script src="../../admin/js/gallery-posters.js"></script>
+<script src="../../assets/js/gallery-render.js"></script>
 <script>
   /* Footer year + sticky bar height var for the floating WhatsApp button */
   document.addEventListener("DOMContentLoaded", function () {

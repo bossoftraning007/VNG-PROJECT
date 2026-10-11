@@ -340,6 +340,7 @@ function render() {
     '<a href="#" onclick="switchTab(\'leads\');return false">Leads</a>' +
     '<a href="#" onclick="switchTab(\'plots\');return false">Plots</a>' +
 '<a href="#" onclick="switchTab(\'photos\');return false">Photos</a>' +
+'<a href="#" onclick="switchTab(\'posters\');return false">Posters</a>' +
 '<a href="#" onclick="switchTab(\'liveimages\');return false">Live Images</a>' +
 '<a href="#" onclick="switchTab(\'settings\');return false">Settings</a>' +
     '<span class="spacer"></span>' +
@@ -488,6 +489,40 @@ function render() {
         '</div>';
       loadSitePages();
     }
+  }
+  else if (CurrentTab === 'posters') {
+    const items = GalleryPosters.getPosters();
+    app.innerHTML = nav +
+      '<div class="admin-content">' +
+      '<h1 class="section-title">Posters / Campaign Banners (' + items.length + ')</h1>' +
+      '<p style="margin-bottom:1.5rem;color:#666;font-size:0.9rem">' +
+      'Posters are full-width marketing banners shown on the main website. ' +
+      'Upload an image, give it a title and a call-to-action, and it goes live immediately.</p>' +
+      '<div class="upload-zone" id="poster-upload-zone" onclick="document.getElementById(\'poster-input\').click()">' +
+      '<p><strong>Tap to select a poster image</strong> from your camera roll</p>' +
+      '<p style="font-size:0.8rem;color:#999">You can select multiple images at once</p>' +
+      '</div>' +
+      '<input type="file" id="poster-input" accept="image/*" multiple style="display:none" onchange="handlePosterUpload(event)">' +
+      '<div style="margin:1.5rem 0">' +
+      '<button class="btn" onclick="openPosterEdit(null)">＋ Add New Poster</button>' +
+      '</div>' +
+      '<div class="thumbnail-grid">' +
+      (items.length ? items.map(function (p, i) {
+        return '<div class="thumbnail-item">' +
+          '<img src="' + esc(p.src) + '" alt="' + esc(p.title) + '" onerror="this.style.opacity=0.3">' +
+          '<div class="caption-area">' +
+          '<strong style="font-size:0.85rem;display:block;margin-bottom:0.2rem">' + esc(p.title) + '</strong>' +
+          '<span style="font-size:0.75rem;color:#999">' + esc(p.subtitle || '') + '</span>' +
+          '<div style="margin-top:0.4rem;display:flex;gap:0.3rem">' +
+          '<button class="btn btn-sm" onclick="openPosterEdit(' + i + ')">✏️ Edit</button>' +
+          '<button class="btn btn-danger btn-sm" onclick="removePosterItem(' + i + ')">&times;</button>' +
+          '</div>' +
+          '</div>' +
+          '</div>';
+      }).join('') : '<div class="empty-state">No posters yet — click "Add New Poster" to create one</div>') +
+      '</div>' +
+      '</div>';
+    setupPosterDropZone();
   }
   else if (CurrentTab === 'settings') {
     app.innerHTML = nav +
@@ -678,6 +713,145 @@ if (!document.getElementById('lead-edit-modal')) {
   modal.id = 'lead-edit-modal';
   modal.className = 'plot-edit-modal';
   document.body.appendChild(modal);
+}
+
+if (!document.getElementById('poster-edit-modal')) {
+  const modal = document.createElement('div');
+  modal.id = 'poster-edit-modal';
+  modal.className = 'plot-edit-modal';
+  document.body.appendChild(modal);
+}
+
+/* ---------- Poster upload + edit handlers ---------- */
+function handlePosterUpload(e) {
+  const files = Array.from(e.target.files || []);
+  files.forEach(function (file) {
+    if (!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = function (ev) {
+      GalleryPosters.addPoster({
+        src: ev.target.result,
+        title: file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '),
+        subtitle: '',
+        body: '',
+        cta: 'Learn More',
+        ctaLink: '#'
+      });
+      render();
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+}
+
+function removePosterItem(idx) {
+  const items = GalleryPosters.getPosters();
+  if (!items[idx]) return;
+  if (confirm('Remove this poster?')) {
+    GalleryPosters.removePoster(items[idx].id);
+    render();
+  }
+}
+
+function openPosterEdit(idx) {
+  const items = GalleryPosters.getPosters();
+  const p = (idx !== null && items[idx]) ? items[idx] : {
+    src: '', title: '', subtitle: '', body: '', cta: 'Learn More', ctaLink: '#'
+  };
+  const isEdit = idx !== null;
+  const modal = document.getElementById('poster-edit-modal');
+  modal.innerHTML =
+    '<div class="card">' +
+    '<h3>' + (isEdit ? 'Edit Poster' : 'New Poster') + '</h3>' +
+    '<div class="form-group"><label>Poster image *</label>' +
+    (p.src
+      ? '<div style="margin-bottom:0.5rem"><img src="' + esc(p.src) + '" style="max-width:200px;border-radius:6px"></div>'
+      : '<div style="margin-bottom:0.5rem;color:#999;font-size:0.85rem">No image selected</div>') +
+    '<input type="file" id="pe-image" accept="image/*" style="margin-bottom:0.5rem" onchange="loadPosterImage(event)">' +
+    '<span style="font-size:0.75rem;color:#999">Leave blank to keep current image</span></div>' +
+    '<div class="form-group"><label>Title</label><input type="text" id="pe-title" value="' + esc(p.title) + '"></div>' +
+    '<div class="form-group"><label>Subtitle</label><input type="text" id="pe-subtitle" value="' + esc(p.subtitle) + '"></div>' +
+    '<div class="form-group"><label>Body text</label><textarea id="pe-body" rows="3">' + esc(p.body) + '</textarea></div>' +
+    '<div class="form-row">' +
+    '<div class="form-group"><label>CTA button text</label><input type="text" id="pe-cta" value="' + esc(p.cta) + '"></div>' +
+    '<div class="form-group"><label>CTA link</label><input type="text" id="pe-ctaLink" value="' + esc(p.ctaLink) + '"></div>' +
+    '</div>' +
+    '<div style="display:flex;gap:0.5rem">' +
+    '<button class="btn" onclick="savePosterEdit(' + (isEdit ? idx : -1) + ')">Save</button>' +
+    '<button class="btn btn-secondary" onclick="closePosterModal()">Cancel</button>' +
+    '</div>' +
+    '</div>';
+  modal.classList.add('show');
+  window._editingPosterIdx = isEdit ? idx : -1;
+  window._editingPosterSrc = p.src || '';
+}
+
+function loadPosterImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function (ev) {
+    window._editingPosterSrc = ev.target.result;
+    const preview = document.querySelector('#poster-edit-modal img');
+    if (preview) { preview.src = ev.target.result; }
+  };
+  reader.readAsDataURL(file);
+}
+
+function savePosterEdit(idx) {
+  const src = window._editingPosterSrc || '';
+  if (!src) { alert('Please select an image first'); return; }
+  const data = {
+    src: src,
+    title: (document.getElementById('pe-title') || {}).value || '',
+    subtitle: (document.getElementById('pe-subtitle') || {}).value || '',
+    body: (document.getElementById('pe-body') || {}).value || '',
+    cta: (document.getElementById('pe-cta') || {}).value || 'Learn More',
+    ctaLink: (document.getElementById('pe-ctaLink') || {}).value || '#'
+  };
+  if (idx === -1) {
+    GalleryPosters.addPoster(data);
+  } else {
+    const items = GalleryPosters.getPosters();
+    GalleryPosters.updatePoster(items[idx].id, data);
+  }
+  closePosterModal();
+  render();
+}
+
+function closePosterModal() {
+  document.getElementById('poster-edit-modal').classList.remove('show');
+  window._editingPosterIdx = null;
+  window._editingPosterSrc = '';
+}
+
+function setupPosterDropZone() {
+  const zone = document.getElementById('poster-upload-zone');
+  if (!zone) return;
+  zone.addEventListener('dragover', function (e) { e.preventDefault(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', function () { zone.classList.remove('dragover'); });
+  zone.addEventListener('drop', function (e) {
+    e.preventDefault();
+    zone.classList.remove('dragover');
+    const files = Array.from(e.dataTransfer.files).filter(function (f) { return f.type.startsWith('image/'); });
+    if (files.length) {
+      files.forEach(function (file) {
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          GalleryPosters.addPoster({
+            src: ev.target.result,
+            title: file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '),
+            subtitle: '',
+            body: '',
+            cta: 'Learn More',
+            ctaLink: '#'
+          });
+          render();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  });
 }
 
 init();
