@@ -339,8 +339,9 @@ function render() {
     '<a href="#" onclick="switchTab(\'dashboard\');return false">Dashboard</a>' +
     '<a href="#" onclick="switchTab(\'leads\');return false">Leads</a>' +
     '<a href="#" onclick="switchTab(\'plots\');return false">Plots</a>' +
-    '<a href="#" onclick="switchTab(\'photos\');return false">Photos</a>' +
-    '<a href="#" onclick="switchTab(\'settings\');return false">Settings</a>' +
+'<a href="#" onclick="switchTab(\'photos\');return false">Photos</a>' +
+'<a href="#" onclick="switchTab(\'liveimages\');return false">Live Images</a>' +
+'<a href="#" onclick="switchTab(\'settings\');return false">Settings</a>' +
     '<span class="spacer"></span>' +
     '<a class="admin-back" href="/index.html" target="_blank" style="color:#C9A961;text-decoration:none;font-weight:600">View Site</a>' +
     ' | ' +
@@ -411,10 +412,11 @@ function render() {
       '</div>' +
       '</div>';
   }
-  else if (CurrentTab === 'photos' || CurrentTab === 'siteimages') {
+  else if (CurrentTab === 'photos' || CurrentTab === 'siteimages' || CurrentTab === 'liveimages') {
     const photoTab = '<div class="tab-nav">' +
       '<button class="tab-btn ' + (CurrentTab === 'photos' ? 'active' : '') + '" onclick="switchTab(\'photos\')">📸 Admin Photos</button>' +
       '<button class="tab-btn ' + (CurrentTab === 'siteimages' ? 'active' : '') + '" onclick="switchTab(\'siteimages\')">🖼️ Site Images</button>' +
+      '<button class="tab-btn ' + (CurrentTab === 'liveimages' ? 'active' : '') + '" onclick="switchTab(\'liveimages\')">📄 Live Site Images</button>' +
       '</div>';
 
     if (CurrentTab === 'photos') {
@@ -439,7 +441,7 @@ function render() {
         '</div>' +
         '</div>';
       setupDropZone();
-    } else {
+    } else if (CurrentTab === 'siteimages') {
       app.innerHTML = nav + photoTab +
         '<div class="admin-content">' +
         '<h1 class="section-title">Site Images (' + SiteImages.length + ')</h1>' +
@@ -461,6 +463,30 @@ function render() {
         '</div>' +
         '</div>';
       setupSiteDropZone();
+    } else {
+      const imgs = getSiteImages();
+      app.innerHTML = nav + photoTab +
+        '<div class="admin-content">' +
+        '<h1 class="section-title">Live Site Images (' + imgs.length + ')</h1>' +
+        '<p style="margin-bottom:1.5rem;color:#666;font-size:0.9rem">' +
+        'These are the pictures <strong>currently referenced</strong> on the published main site. ' +
+        'They are read live from the page HTML — refresh this view after editing a page to see the change.</p>' +
+        '<div class="thumbnail-grid">' +
+        (imgs.length ? imgs.map(function (p, i) {
+          return '<div class="thumbnail-item">' +
+            '<img src="' + esc(p.src) + '" alt="' + esc(p.caption) + '" onerror="this.style.opacity=0.3">' +
+            '<div class="caption-area">' +
+            '<span style="font-size:0.75rem;color:#999;display:block;margin-bottom:0.2rem">' + esc(p.page) + '</span>' +
+            '<span style="font-size:0.8rem">' + esc(p.caption) + '</span>' +
+            '</div>' +
+            '</div>';
+        }).join('') : '<div class="empty-state">No images found on the live site</div>') +
+        '</div>' +
+        '<div style="margin-top:1.5rem;text-align:center">' +
+        '<button class="btn btn-sm" onclick="loadSitePages(function(){ render(); })">🔄 Refresh from live site</button>' +
+        '</div>' +
+        '</div>';
+      loadSitePages();
     }
   }
   else if (CurrentTab === 'settings') {
@@ -580,6 +606,52 @@ function setupSiteDropZone() {
         reader.readAsDataURL(file);
       });
     }
+  });
+}
+
+/* Scan the live main-site pages for every <img> they reference, so the
+   admin can see exactly which pictures are currently published. */
+function getSiteImages() {
+  const pages = ['/index.html', '/projects/future-highway-alair/index.html'];
+  const seen = new Map();
+  const imgRe = /<img[^>]+src="([^"]+)"/g;
+  const capRe = /<img[^>]+alt="([^"]*)"/g;
+  const figRe = /<figcaption[^>]*>([\s\S]*?)<\/figcaption>/g;
+
+  pages.forEach(function (page) {
+    const html = SitePageCache[page];
+    if (!html) return;
+    let m;
+    while ((m = imgRe.exec(html))) {
+      const src = m[1];
+      if (src.startsWith('data:') || src.startsWith('http')) continue;
+      if (!/\.(jpe?g|png|gif|webp|svg)$/i.test(src)) continue;
+      if (seen.has(src)) continue;
+      /* grab the nearest figcaption text as the caption */
+      let caption = '';
+      const after = html.slice(m.index);
+      const fm = figRe.exec(after);
+      if (fm) caption = fm[1].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+      seen.set(src, { src: src, caption: caption || src, page: page });
+    }
+  });
+  return Array.from(seen.values());
+}
+
+/* Cache the main-site HTML so we don't refetch on every render */
+let SitePageCache = {};
+function loadSitePages(cb) {
+  const pages = ['/index.html', '/projects/future-highway-alair/index.html'];
+  let done = 0;
+  pages.forEach(function (page) {
+    fetch(page)
+      .then(function (r) { return r.text(); })
+      .then(function (t) { SitePageCache[page] = t; })
+      .catch(function () { SitePageCache[page] = ''; })
+      .finally(function () {
+        done++;
+        if (done === pages.length && cb) cb();
+      });
   });
 }
 

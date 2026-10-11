@@ -396,6 +396,66 @@ body {
     color: #721c24;
 }
 
+/* Photos sub-tabs (Admin Photos / Site Images / Live Site Images) */
+.tab-nav {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.15s;
+}
+
+.tab-btn:hover {
+    background: #dde1e6;
+}
+
+.tab-btn.active {
+    background: #C9A961;
+    color: #0C1411;
+    border-color: #C9A961;
+}
+
+/* Lead filter buttons */
+.lead-filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-btn {
+    background: #e9ecef;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+}
+
+.filter-btn:hover {
+    background: #dde1e6;
+}
+
+.filter-btn.active {
+    background: #C9A961;
+    color: #0C1411;
+    border-color: #C9A961;
+}
+
 .plot-edit-modal {
     position: fixed;
     inset: 0;
