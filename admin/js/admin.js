@@ -23,7 +23,7 @@ function initPlots() {
 }
 function saveLeads() { localStorage.setItem('vng_leads', JSON.stringify(Leads)); }
 function savePlotStatus() { localStorage.setItem('vng_plot_status', JSON.stringify(PlotStatus)); }
-function saveSettings() { localStorage.setItem('vng_settings', JSON.stringify(Settings)); }
+function saveSettingsToStorage() { localStorage.setItem('vng_settings', JSON.stringify(Settings)); }
 
 function checkLogin() { return localStorage.getItem('vng_admin_logged_in') === 'true'; }
 function doLogin(e) {
@@ -117,13 +117,21 @@ function handlePhotoUpload(e) {
   files.forEach(file => {
     if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
-    reader.onload = (ev) => { gallery.push(ev.target.result); localStorage.setItem('vng_photos', JSON.stringify(gallery)); render(); };
+    reader.onload = (ev) => {
+      gallery.push({ src: ev.target.result, caption: file.name.replace(/\.[^.]+$/, ''), date: new Date().toISOString() });
+      localStorage.setItem('vng_photos', JSON.stringify(gallery));
+      render();
+    };
     reader.readAsDataURL(file);
   });
 }
 function removePhoto(i) {
   const gallery = JSON.parse(localStorage.getItem('vng_photos')||'[]');
   gallery.splice(i,1); localStorage.setItem('vng_photos', JSON.stringify(gallery)); render();
+}
+function updateCaption(i, caption) {
+  const gallery = JSON.parse(localStorage.getItem('vng_photos')||'[]');
+  if (gallery[i]) { gallery[i].caption = caption; localStorage.setItem('vng_photos', JSON.stringify(gallery)); render(); }
 }
 
 function render() {
@@ -145,7 +153,7 @@ function render() {
       <a href="#" onclick="switchTab('plots');return false">Plots</a>
       <a href="#" onclick="switchTab('upload');return false">Photos</a>
       <a href="#" onclick="switchTab('settings');return false">Settings</a>
-      <span class="spacer"></span><a class="logout" href="#" onclick="doLogout();return false">Logout</a></div>
+      <span class="spacer"></span><a class="admin-back" href="/index.html" target="_blank" style="color:#C9A961;text-decoration:none;font-weight:600">View Site</a> | <a class="logout" href="#" onclick="doLogout();return false">Logout</a></div>
       <div class="admin-content"><div class="flash success">Logged in</div>
       <h1 class="section-title">Dashboard</h1><div class="stat-grid">
       <div class="stat-card"><h3>Leads This Week</h3><div class="stat-num">${stats.leadsThisWeek}</div></div>
@@ -161,7 +169,7 @@ function render() {
       <a href="#" onclick="switchTab('plots');return false">Plots</a>
       <a href="#" onclick="switchTab('upload');return false">Photos</a>
       <a href="#" onclick="switchTab('settings');return false">Settings</a>
-      <span class="spacer"></span><a class="logout" href="#" onclick="doLogout();return false">Logout</a></div>
+      <span class="spacer"></span><a class="admin-back" href="/index.html" target="_blank" style="color:#C9A961;text-decoration:none;font-weight:600">View Site</a> | <a class="logout" href="#" onclick="doLogout();return false">Logout</a></div>
       <div class="admin-content"><h1 class="section-title">Lead Inbox (${Leads.length})</h1>
       <div class="lead-list">${Leads.map(l=>leadRow(l)).join('')||'<div class="empty-state">No leads yet</div>'}</div></div>`;
   }
@@ -177,7 +185,7 @@ function render() {
       <a href="#" class="active" onclick="switchTab('plots');return false">Plots</a>
       <a href="#" onclick="switchTab('upload');return false">Photos</a>
       <a href="#" onclick="switchTab('settings');return false">Settings</a>
-      <span class="spacer"></span><a class="logout" href="#" onclick="doLogout();return false">Logout</a></div>
+      <span class="spacer"></span><a class="admin-back" href="/index.html" target="_blank" style="color:#C9A961;text-decoration:none;font-weight:600">View Site</a> | <a class="logout" href="#" onclick="doLogout();return false">Logout</a></div>
       <div class="admin-content"><h1 class="section-title">Plot Status Board</h1>
       <div class="plot-legend"><div class="legend-item"><div class="legend-swatch" style="background:#4CAF50"></div>Available</div>
       <div class="legend-item"><div class="legend-swatch" style="background:#FF9800"></div>Booked</div>
@@ -194,11 +202,12 @@ function render() {
       <a href="#" class="active" onclick="switchTab('upload');return false">Photos</a>
       <a href="#" onclick="switchTab('settings');return false">Settings</a>
       <span class="spacer"></span><a class="logout" href="#" onclick="doLogout();return false">Logout</a></div>
-      <div class="admin-content"><h1 class="section-title">Upload Photos</h1>
+      <div class="admin-content"><h1 class="section-title">Photo Gallery (${gallery.length})</h1>
       <div class="upload-zone" id="upload-zone" onclick="document.getElementById('photo-input').click()">
-      <p><strong>Tap to select photos</strong> from camera roll</p></div>
+      <p><strong>Tap to select photos</strong> from your camera roll</p>
+      <p style="font-size:0.8rem;color:#999">Select multiple images at once</p></div>
       <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(event)">
-      <div class="thumbnail-grid">${gallery.map((src,i)=>`<div class="thumbnail-item"><img src="${src}" alt="photo"><button class="remove" onclick="removePhoto(${i})">&times;</button></div>`).join('')||'<div class="empty-state">No photos</div>'}</div></div>`;
+      <div class="thumbnail-grid">${gallery.map((p,i)=>`<div class="thumbnail-item"><img src="${p.src}" alt="${escapeAttr(p.caption)}"><div style="padding:0.3rem"><input type="text" value="${escapeAttr(p.caption)}" onchange="updateCaption(${i},this.value)" placeholder="Caption" style="width:100%;font-size:0.8rem;padding:0.2rem"></div><button class="remove" onclick="removePhoto(${i})">&times;</button></div>`).join('')||'<div class="empty-state">No photos uploaded yet</div>'}</div></div>`;
     setupDropZone();
   }
   else if (CurrentTab === 'settings') {
@@ -219,11 +228,11 @@ function render() {
       <div class="form-group"><label>Email</label><input type="email" id="s-email" value="${escapeAttr(Settings.email)}"></div>
       <div class="form-group"><label>Address</label><textarea id="s-address" rows="2">${escapeAttr(Settings.address)}</textarea></div>
       <button type="submit" class="btn">Save</button><div id="settings-flash" class="flash success" style="display:none">Saved!</div></form></div>`;
-    document.getElementById('settings-form').addEventListener('submit', saveSettings);
+    document.getElementById('settings-form').addEventListener('submit', saveSettingsForm);
   }
 }
 
-function saveSettings(e) {
+function saveSettingsForm(e) {
   e.preventDefault();
   Settings = {
     whatsapp: document.getElementById('s-whatsapp').value.trim(),
@@ -234,10 +243,9 @@ function saveSettings(e) {
     email: document.getElementById('s-email').value.trim(),
     address: document.getElementById('s-address').value.trim()
   };
-  saveSettings();
+  saveSettingsToStorage();
   const flash = document.getElementById('settings-flash');
-  flash.style.display = 'block';
-  setTimeout(()=>flash.style.display='none', 3000);
+  if (flash) { flash.style.display = 'block'; setTimeout(()=>flash.style.display='none', 3000); }
 }
 
 function setupDropZone() {
