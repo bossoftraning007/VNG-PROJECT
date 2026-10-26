@@ -8,7 +8,7 @@
 
   function esc(s) {
     return String(s || '').replace(/[&<>"']/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      return { '&': '&', '<': '<', '>': '>', '"': '"', "'": "'" }[c];
     });
   }
 
@@ -42,9 +42,21 @@
       '</article>';
   }
 
+  const FALLBACK_GALLERY = [
+    { id: 'g-fb-1', src: 'images/project-1-alair.jpg', caption: 'Future Highway @ Alair — Entrance arch & gate', date: '2025-01-01', type: 'image' },
+    { id: 'g-fb-2', src: 'images/layout-map.png', caption: 'Sanctioned DTCP layout map — 280 plots', date: '2025-01-01', type: 'image' },
+    { id: 'g-fb-3', src: 'images/investment.jpg', caption: 'Investment case study — dual returns', date: '2025-01-01', type: 'image' },
+    { id: 'g-fb-4', src: 'images/brand-hero.jpg', caption: 'Planted, serviced, permitted — site overview', date: '2025-01-01', type: 'image' },
+    { id: 'g-fb-5', src: 'images/about-team.jpg', caption: 'VNG Projects team on site review', date: '2025-01-01', type: 'image' }
+  ];
+  const FALLBACK_POSTERS = [
+    { id: 'p-fb-1', src: 'images/project-1-alair.jpg', title: 'Future Highway @ Alair', subtitle: 'DTCP Approved · RERA Registered · NH-163', body: 'Premium residential plots of 135–500 sq. yards at Sharajipet village, Alair Mandal, Yadadri-Bhongir. Base price ₹12,000 per sq. yard, negotiable. 280 plots with Srigandham sandalwood plantation, swimming pool and underground drainage.', cta: 'View Project', ctaLink: 'projects/future-highway-alair/', date: '2025-01-01', type: 'image' },
+    { id: 'p-fb-2', src: 'images/brand-hero.jpg', title: '25+ Years. One Standard.', subtitle: 'DTCP approved · RERA registered · Serviced land', body: 'Every VNG Projects development follows the same rule — buy on a corridor that is being built out, on land that is already permitted and already serviced.', cta: 'Explore Projects', ctaLink: 'index.html#projects', date: '2025-01-01', type: 'image' }
+  ];
+
   function renderGallery(container) {
     if (!container) return;
-    const items = (global.GalleryPosters && global.GalleryPosters.getGallery()) || [];
+    const items = (global.GalleryPosters && global.GalleryPosters.getGallery && global.GalleryPosters.getGallery()) || FALLBACK_GALLERY;
     if (!items.length) {
       container.innerHTML = '<div class="empty-state">No gallery images yet. Ask the admin to add some.</div>';
       return;
@@ -54,7 +66,7 @@
 
   function renderPosters(container) {
     if (!container) return;
-    const items = (global.GalleryPosters && global.GalleryPosters.getPosters()) || [];
+    const items = (global.GalleryPosters && global.GalleryPosters.getPosters && global.GalleryPosters.getPosters()) || FALLBACK_POSTERS;
     if (!items.length) {
       container.innerHTML = '<div class="empty-state">No posters yet. Ask the admin to add one.</div>';
       return;
@@ -63,17 +75,37 @@
   }
 
   function boot() {
-    document.addEventListener('DOMContentLoaded', function () {
-      renderGallery(document.querySelector('[data-gallery]'));
-      renderPosters(document.querySelector('[data-posters]'));
-    });
+    const galleryContainer = document.querySelector('[data-gallery]');
+    const postersContainer = document.querySelector('[data-posters]');
+    if (galleryContainer) renderGallery(galleryContainer);
+    if (postersContainer) renderPosters(postersContainer);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
-  } else {
-    boot();
+  async function refreshFromBackend() {
+    if (!window.VNG_API) return;
+    try {
+      const posters = await window.VNG_API.get('posters', []);
+      if (posters && posters.length) {
+        if (window.GalleryPosters) {
+          try { localStorage.setItem('vng_gallery_posters', JSON.stringify({ gallery: [], posters })); } catch (e) {}
+        }
+        renderPosters(document.querySelector('[data-posters]'));
+      }
+      const photos = await window.VNG_API.get('photos', []);
+      if (photos && photos.length && window.GalleryPosters) {
+        try { localStorage.setItem('vng_gallery_posters', JSON.stringify({ gallery: photos, posters: [] })); } catch (e) {}
+        renderGallery(document.querySelector('[data-gallery]'));
+      }
+    } catch (e) {}
   }
+
+  function run() { boot(); refreshFromBackend(); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', run);
+  } else { run(); }
+  // ensure
+  try{boot(); renderGallery(document.querySelector("[data-gallery]")); renderPosters(document.querySelector("[data-posters]"));}catch(e){}
+  try{run();}catch(e){} setTimeout(run,0); try{run();}catch(e){};
 
   global.GalleryRender = { renderGallery: renderGallery, renderPosters: renderPosters };
 })(window);

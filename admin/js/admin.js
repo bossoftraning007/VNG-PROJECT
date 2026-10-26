@@ -1,7 +1,7 @@
 /* Admin JS - VNG Projects */
 'use strict';
 
-const ADMIN_EMAIL = 'rasamallaganesh71@gmail.com';
+const ADMIN_EMAIL = 'rasamallaganesh13@gmail.com';
 const PLOTS_TOTAL = 280;
 
 let Leads = JSON.parse(localStorage.getItem('vng_leads') || '[]');
@@ -14,7 +14,7 @@ let Settings = JSON.parse(localStorage.getItem('vng_settings') || JSON.stringify
   phone: '+919505903371',
   secondaryPhone: '+919849754071',
   secondaryPhoneDisplay: '+91 98497 54071',
-  email: 'rasamallaganesh71@gmail.com',
+  email: 'rasamallaganesh13@gmail.com',
   address: '4-9-870, Lecturers Colony, Hayath Nagar, Hyderabad, Rangareddy, Telangana 501505'
 }));
 
@@ -28,13 +28,38 @@ function init() {
   }
   savePlots();
   render();
+  /* Refresh from backend if available — keeps data in sync across devices */
+  refreshFromBackend();
 }
 
-function saveLeads() { localStorage.setItem('vng_leads', JSON.stringify(Leads)); }
-function savePlots() { localStorage.setItem('vng_plot_status', JSON.stringify(PlotStatus)); }
-function savePhotos() { localStorage.setItem('vng_photos', JSON.stringify(Photos)); }
+/* Try to pull the latest data from the server. Fire-and-forget; on any
+   failure we keep using the localStorage copy that is already loaded. */
+async function refreshFromBackend() {
+  if (!window.VNG_API) return;
+  try {
+    const [leads, plots, photos, posters, settings] = await Promise.all([
+      window.VNG_API.get('leads', []),
+      window.VNG_API.get('plots', {}),
+      window.VNG_API.get('photos', []),
+      window.VNG_API.get('posters', []),
+      window.VNG_API.get('settings', {})
+    ]);
+    if (leads && leads.length) { Leads = leads; localStorage.setItem('vng_leads', JSON.stringify(leads)); }
+    if (plots && Object.keys(plots).length) { PlotStatus = plots; localStorage.setItem('vng_plot_status', JSON.stringify(plots)); }
+    if (photos && photos.length) { Photos = photos; localStorage.setItem('vng_photos', JSON.stringify(photos)); }
+    if (posters && posters.length) {
+      try { localStorage.setItem('vng_gallery_posters', JSON.stringify({ gallery: [], posters })); } catch (e) {}
+    }
+    if (settings && Object.keys(settings).length) { Settings = settings; localStorage.setItem('vng_settings', JSON.stringify(settings)); }
+    render();
+  } catch (e) { /* keep localStorage copy */ }
+}
+
+function saveLeads() { localStorage.setItem('vng_leads', JSON.stringify(Leads)); if (window.VNG_API) window.VNG_API.put('leads', Leads); }
+function savePlots() { localStorage.setItem('vng_plot_status', JSON.stringify(PlotStatus)); if (window.VNG_API) window.VNG_API.put('plots', PlotStatus); }
+function savePhotos() { localStorage.setItem('vng_photos', JSON.stringify(Photos)); if (window.VNG_API) window.VNG_API.put('photos', Photos); }
 function saveSiteImages() { localStorage.setItem('vng_site_images', JSON.stringify(SiteImages)); }
-function saveSettings() { localStorage.setItem('vng_settings', JSON.stringify(Settings)); }
+function saveSettings() { localStorage.setItem('vng_settings', JSON.stringify(Settings)); if (window.VNG_API) window.VNG_API.put('settings', Settings); }
 
 function checkLogin() { return localStorage.getItem('vng_admin_logged_in') === 'true'; }
 
@@ -144,6 +169,7 @@ function deleteAllLeads() {
   if (confirm('Delete ALL leads? This cannot be undone!')) {
     Leads = [];
     saveLeads();
+    if (window.VNG_API) window.VNG_API.remove('leads');
     render();
   }
 }
@@ -266,12 +292,14 @@ function handlePhotoUpload(e) {
     if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      Photos.push({
+      const item = {
         src: ev.target.result,
         caption: file.name.replace(/\.[^.]+$/, ''),
         date: new Date().toISOString()
-      });
+      };
+      Photos.push(item);
       savePhotos();
+      if (window.VNG_API) window.VNG_API.post('photos', item);
       render();
     };
     reader.readAsDataURL(file);
@@ -280,7 +308,7 @@ function handlePhotoUpload(e) {
 }
 
 function removePhoto(i) {
-  Photos.splice(i, 1);
+  const removed = Photos.splice(i, 1)[0];
   savePhotos();
   render();
 }
@@ -729,14 +757,16 @@ function handlePosterUpload(e) {
     if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
     reader.onload = function (ev) {
-      GalleryPosters.addPoster({
+      const data = {
         src: ev.target.result,
         title: file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' '),
         subtitle: '',
         body: '',
         cta: 'Learn More',
         ctaLink: '#'
-      });
+      };
+      GalleryPosters.addPoster(data);
+      if (window.VNG_API) window.VNG_API.post('posters', data);
       render();
     };
     reader.readAsDataURL(file);
@@ -749,6 +779,7 @@ function removePosterItem(idx) {
   if (!items[idx]) return;
   if (confirm('Remove this poster?')) {
     GalleryPosters.removePoster(items[idx].id);
+    if (window.VNG_API) window.VNG_API.del('posters', idx);
     render();
   }
 }

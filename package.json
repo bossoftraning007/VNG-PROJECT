@@ -1,0 +1,14 @@
+{
+  "name": "vng-projects",
+  "version": "1.0.0",
+  "description": "VNG Projects website with server-side lead persistence",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.3",
+    "jsdom": "^30.1.2"
+  }
+}

@@ -1,3 +1,15 @@
+function trackEvent(name, params){
+  try {
+    if (typeof gtag === 'function') {
+      gtag('event', name, params || {});
+    } else if (window.dataLayer && Array.isArray(window.dataLayer)) {
+      window.dataLayer.push(Object.assign({event: name}, params || {}));
+    } else if (window.dataLayer) {
+      window.dataLayer.push(Object.assign({event: name}, params || {}));
+    }
+  } catch(e){}
+}
+
 /* ==========================================================================
    VNG PROJECTS � Site behaviour
    Vanilla JS, no dependencies.
@@ -15,7 +27,7 @@ const CONFIG = {
   phoneDisplay: "+91 95059 03371",
   secondaryPhone: "+919849754071",
   secondaryPhoneDisplay: "+91 98497 54071",
-  email: "rasamallaganesh71@gmail.com",
+  email: "rasamallaganesh13@gmail.com",
 };
 
 if (!CONFIG.whatsapp || !CONFIG.phone) {
@@ -255,6 +267,9 @@ function initCalculator() {
         "en-IN"
       )}/sq.yd${extra}. Registration, GST, documentation and plot
       maintenance charges extra. Price indicative & negotiable.`;
+    if (typeof trackEvent === 'function') {
+      try { trackEvent('calculate_plot', { plot_size: size, facing: facing || 0, total: Math.round(total) }); } catch(e){}
+    }
   };
 
   form.addEventListener("input", render);
@@ -301,20 +316,28 @@ function initForms() {
 
       const plot = form.querySelector("[data-calc-out]");
       const lines = [
-        `New enquiry � ${form.dataset.enquiry}`,
+        `New enquiry — ${form.dataset.enquiry}`,
         "",
-        `Name: ${get("name") || "�"}`,
-        `Phone: ${get("phone") || "�"}`,
+        `Name: ${get("name") || "—"}`,
+        `Phone: ${get("phone") || "—"}`,
       ];
       if (get("email")) lines.push(`Email: ${get("email")}`);
       if (get("plotSize"))
         lines.push(`Plot size: ${get("plotSize")} sq. yd`);
       if (get("budget")) lines.push(`Budget: ${get("budget")}`);
-      if (plot && plot.textContent !== "�")
+      if (plot && plot.textContent !== "—")
         lines.push(`Indicative value: ${plot.textContent}`);
       if (get("message")) lines.push("", get("message"));
 
-window.open(waLink(lines.join("\n")), "_blank", "noopener");
+      const waUrl = waLink(lines.join("\n"));
+      const popup = window.open(waUrl, "_blank", "noopener");
+      if (!popup || popup.closed || typeof popup.closed == 'undefined') {
+        const fallback = document.createElement('div');
+        fallback.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#25D366;color:#fff;padding:12px 20px;border-radius:8px;z-index:10000;box-shadow:0 4px 12px rgba(0,0,0,0.3);max-width:90%;text-align:center;';
+        fallback.innerHTML = '<a href="'+waUrl+'" target="_blank" style="color:#fff;text-decoration:none;font-weight:600;">Click here to send your enquiry via WhatsApp</a> <button onclick="this.parentElement.remove()" style="margin-left:10px;background:transparent;border:none;color:#fff;cursor:pointer;">×</button>';
+        document.body.appendChild(fallback);
+        setTimeout(()=>fallback.remove(),15000);
+      }
       form.reset();
       if (plot) plot.textContent = "₹";
       form.dispatchEvent(new CustomEvent("enquiry:sent", { bubbles: true }));
@@ -331,6 +354,9 @@ window.open(waLink(lines.join("\n")), "_blank", "noopener");
           source: form.dataset.enquiry || "Website enquiry"
         });
       }
+      if (typeof trackEvent === 'function') {
+        trackEvent('lead_submit', { form: form.dataset.enquiry || 'enquiry', plotSize: get('plotSize') || '', budget: get('budget') || '' });
+      }
     });
   });
 
@@ -339,12 +365,19 @@ window.open(waLink(lines.join("\n")), "_blank", "noopener");
     a.href = waLink(a.dataset.wa);
     a.target = "_blank";
     a.rel = "noopener";
+    a.addEventListener('click', function(){
+      if(typeof trackEvent === 'function'){ trackEvent('whatsapp_click', { link_text: a.textContent.trim().slice(0,60), source: a.closest('section') ? a.closest('section').id || '' : '' }); }
+    }, {passive:true});
   });
 
   /* Live-fill phone display text from CONFIG */
   $$("[data-phone]").forEach((el) => (el.textContent = CONFIG.phoneDisplay));
-  $$("[data-phone-link]").forEach((el) => (el.href = "tel:" + CONFIG.phone));
-  $$("[data-email]").forEach((el) => (el.textContent = CONFIG.email));
+  $$("[data-phone-link]").forEach((el) => {
+    el.href = "tel:" + (el.getAttribute('data-phone') === CONFIG.phoneDisplay ? CONFIG.phone : el.getAttribute('href').replace('tel:','') || CONFIG.phone);
+    el.addEventListener('click', function(){
+      if(typeof trackEvent === 'function'){ trackEvent('call_click', { phone: CONFIG.phone }); }
+    }, {passive:true});
+  });
 }
 
 /* BOOT ================================================================== */
