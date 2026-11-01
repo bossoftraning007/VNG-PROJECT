@@ -137,7 +137,7 @@
       <span class="hero__eyebrow"><i></i> Sharajipet · Alair Mandal · Yadadri-Bhongir · Telangana 508101</span>
 
       <h1 class="display hero__title">
-        <span class="ln"><span>Premium DTCP Approved Plots at VNG Raigiri, Near Yadadri Temple</span></span>
+        <span class="ln"><span>Premium Plots in Raigiri, Near Yadadri Temple</span></span>
       </h1>
 
       <p class="hero__lead">
@@ -507,7 +507,10 @@
         <span class="eyebrow">Distances</span>
         <div class="dist">
           <div class="dist__row"><span class="dist__name"><svg aria-hidden="true"><use href="#i-pin"></use></svg> Kolanupaka Jain Temple</span><span class="dist__val">~6 km</span></div>
+          <div class="dist__row"><span class="dist__name"><svg aria-hidden="true"><use href="#i-pin"></use></svg> Raigiri (Project Location)</span><span class="dist__val">On Site</span></div>
           <div class="dist__row"><span class="dist__name"><svg aria-hidden="true"><use href="#i-pin"></use></svg> Yadadri Temple (Yadagirigutta)</span><span class="dist__val">~10–15 km</span></div>
+          <div class="dist__row"><span class="dist__name"><svg aria-hidden="true"><use href="#i-road"></use></svg> NH-163</span><span class="dist__val">~5–10 km</span></div>
+          <div class="dist__row"><span class="dist__name"><svg aria-hidden="true"><use href="#i-pin"></use></svg> Alair</span><span class="dist__val">~15–20 km</span></div>
           <div class="dist__row"><span class="dist__name"><svg aria-hidden="true"><use href="#i-pin"></use></svg> Alair Municipality</span><span class="dist__val">Very close</span></div>
           <div class="dist__row"><span class="dist__name"><svg aria-hidden="true"><use href="#i-pin"></use></svg> AIIMS Hospital, Bibinagar</span><span class="dist__val">~25 km</span></div>
           <div class="dist__row"><span class="dist__name"><svg aria-hidden="true"><use href="#i-pin"></use></svg> Bhongir Town</span><span class="dist__val">~25 km</span></div>
@@ -1303,7 +1306,7 @@ for(let i=1;i<=196;i++){
   if(rand<0.15) status='sold';
   else if(rand<0.3) status='booked';
   const size = [135,145,150,165,185,200,250,500][Math.floor(Math.random()*8)];
-  const price = size*12000;
+  const price = size*9999;
   plotData.push({num:i, status, size, price});
 }
 function renderLayout(){
@@ -1334,7 +1337,7 @@ document.getElementById('brochureForm').onsubmit=(e)=>{
   e.preventDefault();
   const name=document.getElementById('brochureName').value;
   const phone=document.getElementById('brochurePhone').value;
-  const msg=`Brochure request: Name: ${name}, Phone: ${phone}, Project: Future Highway @ Alair`;
+  const msg=`Brochure request: Name: ${name}, Phone: ${phone}, Project: VNG Raigiri`;
   const waUrl='https://wa.me/919505903371?text='+encodeURIComponent(msg);
   const popup=window.open(waUrl,'_blank');
   if(!popup || popup.closed || typeof popup.closed=='undefined'){
