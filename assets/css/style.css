@@ -849,6 +849,57 @@ textarea { min-height: 108px; resize: vertical; }
 }
 .drawer__link span { font-family: var(--f-sans); font-size: var(--fs-xs); color: var(--gold); letter-spacing: .2em; }
 
+/* --- Animated brand opening --- */
+.brand-intro[hidden] { display: none; }
+.brand-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  overflow: hidden;
+  color: var(--cream);
+  text-align: center;
+  background: radial-gradient(ellipse at 50% 43%, var(--forest) 0%, var(--ink) 68%);
+  opacity: 1;
+  transition: opacity .55s var(--ease-out), visibility .55s;
+}
+.brand-intro.is-leaving { opacity: 0; visibility: hidden; pointer-events: none; }
+.brand-intro__content { display: flex; flex-direction: column; align-items: center; }
+.brand-intro__mark { width: clamp(132px, 35vw, 205px); margin-bottom: 1.3rem; overflow: visible; }
+.brand-intro__arch, .brand-intro__ground, .brand-intro__plots {
+  fill: none; stroke: var(--gold); stroke-width: 1.5;
+  stroke-dasharray: 530; stroke-dashoffset: 530;
+  animation: brandDraw 1.45s cubic-bezier(.22,.7,.24,1) forwards;
+}
+.brand-intro__ground { stroke-dasharray: 220; animation-delay: .82s; }
+.brand-intro__plots { stroke-width: 1.2; stroke-dasharray: 110; animation-delay: 1.05s; }
+.brand-intro__sun {
+  fill: var(--gold); opacity: 0; transform-box: fill-box; transform-origin: center;
+  animation: brandSunrise .7s ease-out .88s forwards, brandGlow 2.4s ease-in-out 1.7s infinite alternate;
+}
+.brand-intro__tree { color: var(--cream); opacity: 0; transform-box: fill-box; transform-origin: center bottom; animation: brandGrow .55s cubic-bezier(.2,.8,.2,1) 1.2s forwards; }
+.brand-intro__tree:nth-child(6) { animation-delay: 1.4s; }
+.brand-intro__tree:nth-child(7) { animation-delay: 1.58s; }
+.brand-intro__name {
+  color: var(--cream); font: 400 clamp(2.2rem, 8vw, 4.2rem)/1 var(--f-display);
+  letter-spacing: .1em; opacity: 0; transform: translateY(10px);
+  animation: brandArrive .75s var(--ease-out) 1.65s forwards;
+}
+.brand-intro__name span { color: var(--gold); }
+.brand-intro__tagline { margin-top: .8rem; color: var(--sand); font-size: .68rem; letter-spacing: .24em; text-transform: uppercase; opacity: 0; animation: brandArrive .7s var(--ease-out) 1.9s forwards; }
+.brand-intro__skip { margin-top: 2.4rem; padding: .65rem 1rem; border: 1px solid rgba(201,169,97,.45); border-radius: 999px; color: var(--cream); font-size: .75rem; letter-spacing: .08em; transition: background var(--t-fast), border-color var(--t-fast); }
+.brand-intro__skip:hover { background: rgba(201,169,97,.14); border-color: var(--gold); }
+@keyframes brandDraw { to { stroke-dashoffset: 0; } }
+@keyframes brandGrow { from { opacity: 0; transform: scaleY(.25); } to { opacity: 1; transform: scaleY(1); } }
+@keyframes brandSunrise { from { opacity: 0; transform: translateY(12px) scale(.65); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes brandGlow { to { filter: drop-shadow(0 0 12px rgba(201,169,97,.65)); } }
+@keyframes brandArrive { to { opacity: 1; transform: translateY(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .brand-intro, .brand-intro * { animation: none !important; transition: none !important; }
+}
+
 /* --- Hero --- */
 .hero {
   position: relative;

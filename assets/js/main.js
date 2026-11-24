@@ -380,8 +380,38 @@ function initForms() {
   });
 }
 
+/* BRAND INTRO ============================================================ */
+function initBrandIntro() {
+  const intro = $("#brand-intro");
+  if (!intro || prefersReducedMotion) return;
+
+  const skipButton = $(".brand-intro__skip", intro);
+  let closeTimer;
+  const handleEscape = (event) => {
+    if (event.key === "Escape") closeIntro();
+  };
+
+  const closeIntro = () => {
+    if (intro.hidden || intro.classList.contains("is-leaving")) return;
+    window.clearTimeout(closeTimer);
+    document.removeEventListener("keydown", handleEscape);
+    intro.classList.add("is-leaving");
+    window.setTimeout(() => {
+      intro.hidden = true;
+      intro.setAttribute("aria-hidden", "true");
+    }, 560);
+  };
+
+  intro.hidden = false;
+  intro.setAttribute("aria-hidden", "false");
+  skipButton.addEventListener("click", closeIntro);
+  document.addEventListener("keydown", handleEscape);
+  closeTimer = window.setTimeout(closeIntro, 4200);
+}
+
 /* BOOT ================================================================== */
 const INIT = {
+  brandIntro: initBrandIntro,
   header: initHeader,
   media: initMediaSlots,
   reveal: initReveal,
